@@ -1,3 +1,4 @@
+import 'uno.css';
 
 import React from 'react';
 import { ConfigProvider } from 'antd';
