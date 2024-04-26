@@ -1,10 +1,14 @@
-import React from "react";
-import { Button } from "antd";
+import React, { useEffect } from "react";
+import { useRouter } from "next/router";
 
-const Home = () => (
-  <div className="App">
-    <Button type="primary">Button</Button>
-  </div>
-);
+const Home = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/auth/login");
+  }, []);
+
+  return null;
+};
 
 export default Home;
