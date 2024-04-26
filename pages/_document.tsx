@@ -28,16 +28,8 @@ MyDocument.getInitialProps = async (ctx: DocumentContext) => {
     });
 
   const initialProps = await Document.getInitialProps(ctx);
-  const style = extractStyle(cache, true);
-
   return {
     ...initialProps,
-    styles: (
-      <>
-        {initialProps.styles}
-        <style dangerouslySetInnerHTML={{ __html: style }} />
-      </>
-    ),
   };
 };
 

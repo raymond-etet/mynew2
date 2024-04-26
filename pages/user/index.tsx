@@ -40,7 +40,6 @@ const items: MenuItem[] = [
   ]),
 ];
 
-// submenu keys of first level
 const rootSubmenuKeys = ["1", "2", "3"];
 
 const UserCenter = () => {
@@ -58,25 +57,17 @@ const UserCenter = () => {
 
   return (
     <Layout>
-      <Sider
-        width={300}
-        style={{
-          height: "100vh",
-          position: "fixed",
-          left: 0,
-          backgroundColor: "white",
-        }}
-      >
+      <Sider className="uno-w-300px uno-h-100vh uno-fixed uno-left-0 uno-bg-white">
         <Menu
           mode="inline"
           openKeys={openKeys}
           onOpenChange={onOpenChange}
-          style={{ width: 300 }}
+          className="uno-w-300px"
           items={items}
         />
       </Sider>
-      <Content style={{ marginLeft: 300, padding: "24px" }}>
-        <h1>Welcome, {user.username}!</h1>
+      <Content className="uno-ml-300px uno-p-24px">
+        <h1>Welcome1, {user.username}!</h1>
         {/* Add your content here */}
       </Content>
     </Layout>
