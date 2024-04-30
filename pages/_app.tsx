@@ -1,4 +1,5 @@
 import 'uno.css';
+import '@/styles/global.css'; // 新增全局样式文件
 
 import React from 'react';
 import { ConfigProvider } from 'antd';

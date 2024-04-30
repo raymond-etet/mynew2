@@ -1,0 +1,11 @@
+/* /Users/raymond/Documents/next/next_v1/styles/globals.css */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+#__next {
+    height: 100%;
+}
