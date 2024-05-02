@@ -1,105 +1,118 @@
 const fs = require("fs");
 const path = require("path");
+
 const rootDir = "/Users/raymond/Documents/next/next_v1";
 
-// 删除 MainLayout.tsx
-fs.unlinkSync(path.join(rootDir, "src/components/Layout.tsx"));
+// 更新 pages/user/luru.tsx
+const luruContent = `
+import React, { useState } from 'react';
+import { 
+  ProForm,
+  ProFormText, 
+  ProFormDatePicker, 
+  ProFormSelect,
+  ProFormTag,
+  ProFormTextArea,
+} from '@ant-design/pro-components';
+import { message } from 'antd';
+import axios from 'axios';
 
-// 修改 _app.tsx
-const appContent = `
-import 'uno.css';
-import '@/styles/global.css';
-import React from 'react';
-import { ConfigProvider } from 'antd';
-import type { AppProps } from 'next/app';
-import theme from '../theme/themeConfig';
+const actresses = ['演员1', '演员2', '演员3', '演员4', '演员5'];
+const tags = ['标签1', '标签2', '标签3', '标签4', '标签5'];
 
-const App = ({ Component, pageProps }: AppProps) => (
-  <ConfigProvider theme={theme}>
-    <Component {...pageProps} />
-  </ConfigProvider>
-);
+const Luru = () => {
+  const [selectedTags, setSelectedTags] = useState([]);
 
-export default App;
-`;
-fs.writeFileSync(path.join(rootDir, "pages/_app.tsx"), appContent);
-
-// 修改 user/index.tsx
-const userIndexContent = `
-import React, { useState } from "react";
-import { Layout, Menu } from "antd";
-import {
-  AppstoreOutlined,
-  MailOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
-import type { MenuProps } from "antd";
-import Link from "next/link";
-import { useAuthRedirect } from '@/utils/auth';
-
-const { Sider, Content } = Layout;
-
-type MenuItem = Required<MenuProps>["items"][number];
-
-function getItem(
-  label: React.ReactNode,
-  key: React.Key,
-  icon?: React.ReactNode,
-  children?: MenuItem[],
-  type?: "group"
-): MenuItem {
-  return {
-    key,
-    icon,
-    children,
-    label,
-    type,
-  } as MenuItem;
-}
-
-const items: MenuItem[] = [
-  getItem("Profile", "1", <MailOutlined />, [
-    getItem(<Link href="/user/profile">Profile</Link>, "1"),
-  ]),
-  getItem("Settings", "2", <AppstoreOutlined />, [
-    getItem(<Link href="/user/settings">Settings</Link>, "2"),
-  ]),
-  getItem("Notifications", "3", <SettingOutlined />, [
-    getItem(<Link href="/user/notifications">Notifications</Link>, "3"),
-  ]),
-];
-
-const rootSubmenuKeys = ["1", "2", "3"];
-
-const UserCenter = () => {
-  const [collapsed, setCollapsed] = useState(false);
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-  useAuthRedirect();
-
-  const onCollapse = (collapsed: boolean) => {
-    setCollapsed(collapsed);
+  const handleSubmit = async (values) => {
+    try {
+      await axios.post('/api/luru', { ...values, tags: selectedTags });
+      message.success('提交成功');
+    } catch (error) {
+      message.error('提交失败，请重试');
+    }
   };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
-        <div className="logo" />
-        <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
-      </Sider>
-      <Layout className="site-layout">
-        <Content style={{ margin: '0 16px' }}>
-          <div style={{ padding: 24, minHeight: 360 }}>
-            <h1>Welcome, {user.username}!</h1>
-          </div>
-        </Content>
-      </Layout>
-    </Layout>
+    <ProForm onFinish={handleSubmit}>
+      <ProFormText name="number" label="号码" />
+      <ProFormDatePicker name="publishDate" label="发布日期" />
+      <ProFormSelect 
+        name="actress" 
+        label="演员名称"
+        showSearch
+        options={actresses.map(item => ({ label: item, value: item }))}
+      />
+      <ProFormTag.CheckableTag 
+        name="tags"
+        label="标签"
+        options={tags.map(item => ({ label: item, value: item }))}
+        onChange={setSelectedTags}
+      />
+      <ProFormTextArea name="remark" label="备注" />
+    </ProForm>
   );
 };
 
-export default UserCenter;
+export default Luru;
 `;
-fs.writeFileSync(path.join(rootDir, "pages/user/index.tsx"), userIndexContent);
 
-console.log("项目已更新完成。");
+fs.writeFileSync(path.join(rootDir, "pages/user/luru.tsx"), luruContent);
+
+// 更新 pages/api/luru.ts
+const apiLuruContent = `
+import { PrismaClient } from '@prisma/client';
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+const prisma = new PrismaClient();
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'POST') {
+    const { number, publishDate, actress, tags, remark } = req.body;
+
+    try {
+      await prisma.record.create({
+        data: { number, publishDate, actress, tags, remark },  
+      });
+      res.status(201).json({ message: 'Record created successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  } else {
+    res.status(405).json({ message: 'Method not allowed' });  
+  }
+}
+`;
+
+fs.writeFileSync(path.join(rootDir, "pages/api/luru.ts"), apiLuruContent);
+
+// 更新 prisma/schema.prisma
+const schemaContent = `
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
+}
+
+model Record {
+  id          Int      @id @default(autoincrement())
+  number      String
+  publishDate DateTime
+  actress     String
+  tags        String
+  remark      String?
+}
+`;
+
+fs.writeFileSync(path.join(rootDir, "prisma/schema.prisma"), schemaContent);
+
+console.log("页面、API和数据库schema已更新完成");
