@@ -33,7 +33,7 @@ const items: MenuItem[] = [
         getItem(<Link href="/user/show">Settings</Link>, '2'),
     ]),
     getItem('Notifications', '3', <SettingOutlined />, [
-        getItem(<Link href="/pages/user/show">Notifications</Link>, '3'),
+        getItem(<Link href="/user/settings">Notifications</Link>, '3'),
     ]),
 ];
 
