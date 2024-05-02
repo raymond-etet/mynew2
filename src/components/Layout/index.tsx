@@ -26,14 +26,14 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-    getItem('Profile', '1', <MailOutlined />, [
-        getItem(<Link href="/user/profile">Profile</Link>, '1'),
+    getItem('luru', '1', <MailOutlined />, [
+        getItem(<Link href="/user/luru">Profile</Link>, '1'),
     ]),
-    getItem('Settings', '2', <AppstoreOutlined />, [
-        getItem(<Link href="/user/settings">Settings</Link>, '2'),
+    getItem('show', '2', <AppstoreOutlined />, [
+        getItem(<Link href="/user/show">Settings</Link>, '2'),
     ]),
     getItem('Notifications', '3', <SettingOutlined />, [
-        getItem(<Link href="/user/notifications">Notifications</Link>, '3'),
+        getItem(<Link href="/pages/user/show">Notifications</Link>, '3'),
     ]),
 ];
 

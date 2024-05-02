@@ -1,10 +1,10 @@
 import React from "react";
 import { Button } from "antd";
 
-const profile = () => (
+const luru = () => (
   <div className="App">
     <Button type="primary">Button</Button>
   </div>
 );
 
-export default profile;
+export default luru;

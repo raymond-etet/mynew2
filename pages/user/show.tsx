@@ -1,10 +1,10 @@
 import React from "react";
 import { Button } from "antd";
 
-const notifications = () => (
+const show = () => (
   <div className="App">
     <Button type="primary">Button</Button>
   </div>
 );
 
-export default notifications;
+export default show;
