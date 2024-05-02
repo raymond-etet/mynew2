@@ -1,15 +1,17 @@
-import 'uno.css';
-import '@/styles/global.css'; // 新增全局样式文件
 
+import 'uno.css';
+import '@/styles/global.css'; 
 import React from 'react';
 import { ConfigProvider } from 'antd';
 import type { AppProps } from 'next/app';
 import theme from '../theme/themeConfig';
-import Login from './auth/login';
+import MainLayout from '@/components/Layout';
 
 const App = ({ Component, pageProps }: AppProps) => (
   <ConfigProvider theme={theme}>
-    {Component === Login ? <Login /> : <Component {...pageProps} />}
+    <MainLayout>
+      <Component {...pageProps} />
+    </MainLayout>
   </ConfigProvider>
 );
 

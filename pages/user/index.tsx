@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Layout, Menu } from "antd";
 import {
@@ -7,6 +8,7 @@ import {
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import Link from "next/link";
+import { useAuthRedirect } from '@/utils/auth';
 
 const { Sider, Content } = Layout;
 
@@ -46,6 +48,8 @@ const UserCenter = () => {
   const [openKeys, setOpenKeys] = useState(["1"]);
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
+  useAuthRedirect();
+
   const onOpenChange: MenuProps["onOpenChange"] = (keys) => {
     const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
     if (rootSubmenuKeys.indexOf(latestOpenKey!) === -1) {
@@ -67,8 +71,7 @@ const UserCenter = () => {
         />
       </Sider>
       <Content className="uno-ml-300px uno-p-24px">
-        <h1>Welcome1, {user.username}!</h1>
-        {/* Add your content here */}
+        <h1>Welcome, {user.username}!</h1>
       </Content>
     </Layout>
   );
