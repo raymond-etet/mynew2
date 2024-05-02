@@ -1,5 +1,5 @@
 // /Users/raymond/Documents/next/next_v1/src/components/Layout/index.tsx
-import React, { useState } from 'react';
+import React, {useEffect, useState } from 'react';
 import { Layout, Menu } from 'antd';
 import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
@@ -43,6 +43,11 @@ interface GlobalLayoutProps {
 
 const GlobalLayout: React.FC<GlobalLayoutProps> = ({ children }) => {
     const [collapsed, setCollapsed] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        setIsLoggedIn(!!localStorage.getItem('token'));
+    }, []);
 
     const onCollapse = (collapsed: boolean) => {
         setCollapsed(collapsed);
@@ -50,10 +55,12 @@ const GlobalLayout: React.FC<GlobalLayoutProps> = ({ children }) => {
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
-                <div className="logo" />
-                <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
-            </Sider>
+            {isLoggedIn && (
+                <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
+                    <div className="logo" />
+                    <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
+                </Sider>
+            )}
             <Layout className="site-layout">
                 <Content style={{ margin: '0 16px' }}>
                     <div style={{ padding: 24, minHeight: 360 }}>
