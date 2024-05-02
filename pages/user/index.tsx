@@ -45,34 +45,28 @@ const items: MenuItem[] = [
 const rootSubmenuKeys = ["1", "2", "3"];
 
 const UserCenter = () => {
-  const [openKeys, setOpenKeys] = useState(["1"]);
+  const [collapsed, setCollapsed] = useState(false);
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   useAuthRedirect();
 
-  const onOpenChange: MenuProps["onOpenChange"] = (keys) => {
-    const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
-    if (rootSubmenuKeys.indexOf(latestOpenKey!) === -1) {
-      setOpenKeys(keys);
-    } else {
-      setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
-    }
+  const onCollapse = (collapsed: boolean) => {
+    setCollapsed(collapsed);
   };
 
   return (
-    <Layout>
-      <Sider className="uno-w-300px uno-h-100vh uno-fixed uno-left-0 uno-bg-white">
-        <Menu
-          mode="inline"
-          openKeys={openKeys}
-          onOpenChange={onOpenChange}
-          className="uno-w-300px"
-          items={items}
-        />
+    <Layout style={{ minHeight: '100vh' }}>
+      <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
+        <div className="logo" />
+        <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
       </Sider>
-      <Content className="uno-ml-300px uno-p-24px">
-        <h1>Welcome, {user.username}!</h1>
-      </Content>
+      <Layout className="site-layout">
+        <Content style={{ margin: '0 16px' }}>
+          <div style={{ padding: 24, minHeight: 360 }}>
+            <h1>Welcome, {user.username}!</h1>
+          </div>
+        </Content>
+      </Layout>
     </Layout>
   );
 };
