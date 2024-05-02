@@ -47,7 +47,7 @@ const GlobalLayout: React.FC<GlobalLayoutProps> = ({ children }) => {
 
     useEffect(() => {
         setIsLoggedIn(!!localStorage.getItem('token'));
-    }, []);
+    }, [typeof window !== 'undefined' && localStorage.getItem('token')]);
 
     const onCollapse = (collapsed: boolean) => {
         setCollapsed(collapsed);
