@@ -14,6 +14,7 @@
     "@ant-design/icons": "^5.3.6",
     "@ant-design/pro-components": "^2.7.1",
     "@prisma/client": "^5.13.0",
+    "@unocss/webpack": "^0.59.4",
     "antd": "^5.16.4",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
@@ -38,6 +39,6 @@
     "typescript": "^5.4.5"
   },
   "prisma": {
-    "seed":"node prisma/seed.mjs"
+    "seed": "node prisma/seed.mjs"
   }
 }

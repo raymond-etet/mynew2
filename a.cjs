@@ -1,279 +1,98 @@
 const fs = require("fs");
 const path = require("path");
-
 const rootDir = "/Users/raymond/Documents/next/next_v1";
 
-// 创建 src/layouts 目录
-fs.mkdirSync(path.join(rootDir, "src", "layouts"), { recursive: true });
+// 修改 pages/user/luru.tsx
+const luruContent = `import React from 'react';
+import { ProForm, ProFormText, ProFormDatePicker, ProFormSelect, ProFormTextArea } from '@ant-design/pro-components';
+import { message, Checkbox, Row, Col } from 'antd';
+import axios from 'axios';
+import { PrismaClient } from '@prisma/client';
 
-// 创建 BasicLayout.tsx
-fs.writeFileSync(
-    path.join(rootDir, "src", "layouts", "BasicLayout.tsx"),
-    `import React, { FC } from 'react';
-import { Layout } from 'antd';
-import { Outlet } from 'react-router-dom';
+const Luru = ({ actresses, tags }) => {
+  const handleSubmit = async (values) => {
+    try {
+      await axios.post('/api/luru', values);
+      message.success('提交成功');
+    } catch (error) {
+      message.error('提交失败，请重试');
+    }
+  };
 
-const { Content } = Layout;
-
-type BasicLayoutProps = {};
-
-const BasicLayout: FC<BasicLayoutProps> = (props) => {
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Content style={{ margin: '0 16px' }}>
-        <div style={{ padding: 24, minHeight: 360 }}>
-          <Outlet />
-        </div>
-      </Content>
-    </Layout>
+    <ProForm onFinish={handleSubmit}>
+      <ProFormText name="number" label="号码" />
+      <ProFormDatePicker name="publishDate" label="发布日期" />
+      <ProFormSelect
+        name="actress"
+        label="演员名称"
+        showSearch
+        options={actresses.map((item) => ({ label: item.name, value: item.name }))}
+      />
+      <ProForm.Item name="tags" label="标签">
+        <Checkbox.Group>
+          <Row gutter={[16, 16]}>
+            {tags.map((tag) => (
+              <Col key={tag.id}>
+                <Checkbox value={tag.name}>{tag.name}</Checkbox>
+              </Col>
+            ))}
+          </Row>
+        </Checkbox.Group>
+      </ProForm.Item>
+      <ProFormTextArea name="remark" label="备注" />
+    </ProForm>
   );
 };
 
-export default BasicLayout;
-`
-);
+export async function getServerSideProps() {
+    const prisma = new PrismaClient();
+    const actresses = await prisma.actress.findMany();
+    const tags = await prisma.tag.findMany();
+    await prisma.$disconnect();
 
-// 创建 UserLayout.tsx
-fs.writeFileSync(
-    path.join(rootDir, "src", "layouts", "UserLayout.tsx"),
-    `import React, { FC } from 'react';
-import { Layout } from 'antd';
-import { Outlet } from 'react-router-dom';
-
-const { Content } = Layout;
-
-type UserLayoutProps = {};
-
-const UserLayout: FC<UserLayoutProps> = (props) => {
-  return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Content style={{ margin: '0 16px' }}>
-        <div style={{ padding: 24, minHeight: 360 }}>
-          <Outlet />
-        </div>
-      </Content>
-    </Layout>
-  );
-};
-
-export default UserLayout;
-`
-);
-
-// 创建 src/routes 目录
-fs.mkdirSync(path.join(rootDir, "src", "routes"), { recursive: true });
-
-// 创建 config.tsx
-fs.writeFileSync(
-    path.join(rootDir, "src", "routes", "config.tsx"),
-    `import React, { FC, Suspense } from 'react';
-import { RouteProps } from 'react-router-dom';
-import Loading from '@/components/Loading';
-import PrivateRoute from './privateRoute';
-
-export type WrapperRouteProps = RouteProps & {
-  title?: string;
-  auth?: boolean;
-};
-
-const PublicRoute = (props: any) => {
-  return props.element;
-};
-
-const WrapperRouteComponent: FC<WrapperRouteProps> = ({
-  title,
-  auth,
-  ...props
-}) => {
-  const WitchRoute = auth ? PrivateRoute : PublicRoute;
-
-  if (title) {
-    document.title = title;
-  }
-  return <WitchRoute {...props} />;
-};
-
-const WrapperRouteWithOutLayoutComponent: FC<WrapperRouteProps> = ({
-  auth,
-  ...props
-}) => {
-  return <Suspense fallback={<Loading />}>{props.element}</Suspense>;
-};
-
-export { WrapperRouteComponent, WrapperRouteWithOutLayoutComponent };
-`
-);
-
-// 创建 privateRoute.tsx
-fs.writeFileSync(
-    path.join(rootDir, "src", "routes", "privateRoute.tsx"),
-    `import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-
-const PrivateRoute = (props: any) => {
-  const location = useLocation();
-  const { pathname } = location;
-
-  const token = localStorage.getItem('token');
-
-  return token ? (
-    pathname === '/' ? (
-      <Navigate to={{ pathname: '/user' }} replace />
-    ) : (
-      props.element
-    )
-  ) : (
-    <Navigate to={{ pathname: '/auth/login' }} replace />
-  );
-};
-
-export default PrivateRoute;
-`
-);
-
-// 创建 Redirect.tsx
-fs.writeFileSync(
-    path.join(rootDir, "src", "routes", "Redirect.tsx"),
-    `import { FC, useEffect } from 'react';
-import { useNavigate, NavigateProps } from 'react-router-dom';
-
-type RedirectProps = NavigateProps;
-
-const Redirect: FC<RedirectProps> = ({ to }) => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate(to, { replace: true });
-  });
-  return null;
-};
-
-export default Redirect;
-`
-);
-
-// 创建 src/routes/user 目录
-fs.mkdirSync(path.join(rootDir, "src", "routes", "user"), { recursive: true });
-
-// 创建 user/index.tsx
-fs.writeFileSync(
-    path.join(rootDir, "src", "routes", "user", "index.tsx"),
-    `import React from 'react';
-import { RouteObject } from 'react-router-dom';
-import Redirect from '../Redirect';
-import { WrapperRouteComponent } from '../config';
-import UserCenter from '@/pages/user';
-
-const UserRoute = () => {
-  const routeList: RouteObject[] = [
-    {
-      path: '/user',
-      element: <Redirect to="/user/index" />,
-    },
-    {
-      path: '/user/index',
-      element: (
-        <WrapperRouteComponent element={<UserCenter />} title="用户中心" auth />
-      ),
-    },
-  ];
-  return routeList;
-};
-
-export default UserRoute;
-`
-);
-
-// 修改 src/pages/_app.tsx
-fs.writeFileSync(
-    path.join(rootDir, "src", "pages", "_app.tsx"),
-    `import 'uno.css';
-import '@/styles/global.css';
-import React from 'react';
-import { ConfigProvider } from 'antd';
-import type { AppProps } from 'next/app';
-import theme from '../theme/themeConfig';
-import RenderRouter from '@/routes';
-
-const App = ({ Component, pageProps }: AppProps) => (
-  <ConfigProvider theme={theme}>
-    <RenderRouter>
-      <Component {...pageProps} />
-    </RenderRouter>
-  </ConfigProvider>
-);
-
-export default App;
-`
-);
-
-// 创建 src/routes/index.tsx
-fs.writeFileSync(
-    path.join(rootDir, "src", "routes", "index.tsx"),
-    `import React, { lazy, FC, useEffect } from 'react';
-import { useRoutes, RouteObject } from 'react-router-dom';
-import NProgress from 'nprogress';
-import 'nprogress/nprogress.css';
-import NotFound from '@/pages/404';
-import { WrapperRouteComponent, WrapperRouteWithOutLayoutComponent } from './config';
-import Redirect from './Redirect';
-import BasicLayout from '@/layouts/BasicLayout';
-import UserLayout from '@/layouts/UserLayout';
-import user from './user';
-
-NProgress.configure({ showSpinner: false });
-const Login = lazy(() => import('@/pages/auth/login'));
-const Register = lazy(() => import('@/pages/auth/register'));
-
-const routeList: RouteObject[] = [
-  {
-    path: '/',
-    element: <WrapperRouteComponent element={<BasicLayout />} />,
-    children: [
-      {
-        path: '/',
-        element: <Redirect to="/user" />,
-      },
-    ],
-  },
-  {
-    path: '/user',
-    element: <WrapperRouteComponent element={<UserLayout />} auth />,
-    children: [...user()],
-  },
-  {
-    path: '/auth',
-    element: <WrapperRouteWithOutLayoutComponent element={<UserLayout />} />,
-    children: [
-      {
-        path: '/auth/login',
-        element: <WrapperRouteWithOutLayoutComponent element={<Login />} title="登录" />,
-      },
-      {
-        path: '/auth/register',
-        element: <WrapperRouteWithOutLayoutComponent element={<Register />} title="注册" />,
-      },
-    ],
-  },
-  {
-    path: '*' || '/404',
-    element: <WrapperRouteWithOutLayoutComponent element={<NotFound />} title="404" />,
-  },
-];
-
-const RenderRouter: FC = () => {
-  useEffect(() => {
-    NProgress.done();
-    return () => {
-      NProgress.start();
+    return {
+        props: {
+            actresses,
+            tags,
+        },
     };
-  });
-  const element = useRoutes(routeList);
-  return element;
-};
+}
 
-export default RenderRouter;
-`
-);
+export default Luru;
+`;
 
-console.log("项目架构优化完成！");
+fs.writeFileSync(path.join(rootDir, "pages", "user", "luru.tsx"), luruContent);
+
+// 修改 pages/api/luru.ts
+const apiLuruContent = `import { PrismaClient } from '@prisma/client';
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+const prisma = new PrismaClient();
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'POST') {
+    const { number, publishDate, actress, tags, remark } = req.body;
+
+    try {
+      await prisma.record.create({
+        data: {
+          number,
+          publishDate: new Date(publishDate),
+          actress,
+          tags,
+          remark
+        },
+      });
+      res.status(201).json({ message: 'Record created successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  } else {
+    res.status(405).json({ message: 'Method not allowed' });
+  }
+}
+`;
+
+fs.writeFileSync(path.join(rootDir, "pages", "api", "luru.ts"), apiLuruContent);

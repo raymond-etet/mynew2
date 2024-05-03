@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           number,
           publishDate: new Date(publishDate),
           actress,
-          tags: tags.join(','),
+          tags,
           remark
         },
       });
