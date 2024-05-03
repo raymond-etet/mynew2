@@ -22,3 +22,13 @@ model User {
   username String @unique
   password String
 }
+
+model Actress {
+  id   Int    @id @default(autoincrement())
+  name String
+}
+
+model Tag {
+  id   Int    @id @default(autoincrement())
+  name String
+}
