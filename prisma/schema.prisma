@@ -1,11 +1,19 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
 }
 
 model Record {
@@ -15,20 +23,17 @@ model Record {
   actress     String
   tags        String
   remark      String?
-}
-
-model User {
-  id       Int    @id @default(autoincrement())
-  username String @unique
-  password String
+  yanzhi      Int      @default(0)
+  shengao     Int      @default(0) 
+  tixing      Int      @default(0)
 }
 
 model Actress {
   id   Int    @id @default(autoincrement())
-  name String
+  name String @unique
 }
 
 model Tag {
   id   Int    @id @default(autoincrement())
-  name String
+  name String @unique
 }

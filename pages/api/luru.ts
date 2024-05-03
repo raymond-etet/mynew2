@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { number, publishDate, actress, tags, remark } = req.body;
+    const { number, publishDate, actress, tags, remark, yanzhi, shengao, tixing } = req.body;
 
     try {
       await prisma.record.create({
@@ -14,7 +14,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           publishDate: new Date(publishDate),
           actress,
           tags: tags.join(','),
-          remark
+          remark,
+          yanzhi: Number(yanzhi),
+          shengao: Number(shengao),
+          tixing: Number(tixing),
         },
       });
       res.status(201).json({ message: 'Record created successfully' });

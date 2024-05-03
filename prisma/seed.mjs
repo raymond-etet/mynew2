@@ -1,30 +1,36 @@
+// prisma/seed.mjs
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const defaultActresses = [
-    { name: '演员1' },
-    { name: '演员2' },
-    { name: '演员3' },
-    { name: '演员4' },
-    { name: '演员5' },
-  ];
+  // 创建用户
+  const user = await prisma.user.upsert({
+    where: { username: 'admin' },
+    update: {},
+    create: {
+      username: 'admin',
+      password: 'admin',
+    },
+  });
+  console.log({ user });
 
-  const defaultTags = [
-    { name: '标签1' },
-    { name: '标签2' },
-    { name: '标签3' },
-    { name: '标签3' },
-    { name: '标签4' },
-  ];
-
-  for (const actress of defaultActresses) {
-    await prisma.actress.create({ data: actress });
+  // 创建演员
+  for (const name of ['演员1', '演员2', '演员3', '演员4', '演员5']) {
+    await prisma.actress.upsert({
+      where: { name },
+      update: {},
+      create: { name },
+    });
   }
 
-  for (const tag of defaultTags) {
-    await prisma.tag.create({ data: tag });
+  // 创建标签
+  for (const name of ['标签1', '标签2', '标签3', '标签4', '标签5']) {
+    await prisma.tag.upsert({
+      where: { name },
+      update: {},
+      create: { name },
+    });
   }
 }
 
